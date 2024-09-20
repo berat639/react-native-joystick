@@ -1,4 +1,4 @@
-import { ViewProps } from "react-native";
+import { ImageSourcePropType, ViewProps } from "react-native";
 export interface IReactNativeJoystickEvent {
   type: "move" | "stop" | "start";
   position: {
@@ -18,4 +18,5 @@ export interface IReactNativeJoystickProps extends ViewProps {
   onStop?: (e: IReactNativeJoystickEvent) => void;
   radius?: number;
   color?: string;
+  source?:ImageSourcePropType
 }

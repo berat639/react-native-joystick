@@ -3,13 +3,14 @@ import { View, StyleSheet, Platform } from "react-native";
 import * as utils from "./utils";
 import { Gesture, GestureDetector, GestureTouchEvent } from "react-native-gesture-handler";
 import { IReactNativeJoystickProps } from "./types";
+import { ImageBackground } from "react-native";
 
-export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000", radius = 150, style, ...props }: IReactNativeJoystickProps) => {
+export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000", radius = 150, source, style, ...props }: IReactNativeJoystickProps) => {
   const wrapperRadius = radius;
   const nippleRadius = wrapperRadius / 3;
 
-  const [x, setX] = useState(wrapperRadius - nippleRadius);
-  const [y, setY] = useState(wrapperRadius - nippleRadius);
+  const [x, setX] = useState(0); // wrapperRadius - nippleRadius
+  const [y, setY] = useState(0); // wrapperRadius - nippleRadius
 
   const handleTouchMove = useCallback(
     (event: GestureTouchEvent) => {
@@ -17,8 +18,8 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
       const fingerX = e.x;
       const fingerY = Platform.OS === 'web' ? (wrapperRadius * 2 - e.y) : e.y;
       let coordinates = {
-        x: fingerX - nippleRadius,
-        y: fingerY - nippleRadius,
+        x: fingerX - wrapperRadius,
+        y: fingerY - wrapperRadius,
       };
 
       const angle = utils.calcAngle({ x: fingerX, y: fingerY }, { x: wrapperRadius, y: wrapperRadius });
@@ -31,8 +32,8 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
       if (dist === wrapperRadius) {
         coordinates = utils.findCoord({ x: wrapperRadius, y: wrapperRadius }, dist, angle);
         coordinates = {
-          x: coordinates.x - nippleRadius,
-          y: coordinates.y - nippleRadius,
+          x: coordinates.x - wrapperRadius,
+          y: coordinates.y - wrapperRadius,
         };
       }
       setX(coordinates.x);
@@ -53,8 +54,8 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
   );
 
   const handleTouchEnd = () => {
-    setX(wrapperRadius - nippleRadius);
-    setY(wrapperRadius - nippleRadius);
+    setX(0); // wrapperRadius - nippleRadius
+    setY(0); // wrapperRadius - nippleRadius
     onStop &&
       onStop({
         force: 0,
@@ -94,7 +95,7 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
           width: 2 * radius,
           height: 2 * radius,
           borderRadius: radius,
-          backgroundColor: `${color}55`,
+          //backgroundColor: `${color}55`,
           transform: [{ rotateX: "180deg" }],
           ...(style && typeof style === "object" ? style : {}),
         },
@@ -102,7 +103,7 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
           height: 2 * nippleRadius,
           width: 2 * nippleRadius,
           borderRadius: nippleRadius,
-          backgroundColor: `${color}bb`,
+          //backgroundColor: `${color}bb`,
           position: "absolute",
           transform: [
             {
@@ -111,6 +112,18 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
             { translateY: y },
           ],
         },
+        imageBackground: {
+            width: 5 * nippleRadius,
+            height: 5 * nippleRadius,
+            position: "absolute",
+            transform: [
+              {
+                translateX: x,
+              },
+              { translateY: y },
+            ],
+            zIndex: 10000,
+        }
       }),
     [radius, color, nippleRadius, x, y]
   );
@@ -118,7 +131,9 @@ export const ReactNativeJoystick = ({ onStart, onMove, onStop, color = "#000000"
   return (
     <GestureDetector gesture={panGesture}>
       <View style={styles.wrapper} {...props}>
-        <View pointerEvents="none" style={styles.nipple}></View>
+        <ImageBackground source={source} resizeMode="center" style={styles.imageBackground}>
+          <View pointerEvents="none" style={styles.nipple}></View>
+        </ImageBackground>
       </View>
     </GestureDetector>
   );
