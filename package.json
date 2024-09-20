@@ -4,10 +4,10 @@
   "description": "React Native Joystick",
   "license": "MIT",
   "files": [
-    "lib"
+    "src"
   ],
-  "types": "lib/index.d.ts",
-  "main": "lib/index.js",
+  "types": "src/types.ts",
+  "main": "src/index.tsx",
   "homepage": "https://github.com/berat639/react-native-joystick",
   "repository": {
     "type": "git",
