@@ -34,7 +34,7 @@
     "example": "example"
   },
   "scripts": {
-    "prepublish": "tsc",
+    
     "build": "tsc --project tsconfig.build.json"
   },
   "peerDependencies": {
